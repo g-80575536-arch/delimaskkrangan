@@ -31,7 +31,7 @@
             margin-bottom: 25px;
             font-size: 14px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
             font-size: 16px;
@@ -66,6 +66,13 @@
         button:hover {
             background-color: #0056b3;
         }
+        .error-msg {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -74,23 +81,27 @@
         <h2>Sistem Log Masuk AINS</h2>
         <p class="subtitle">Taip nama anda untuk carian e-mel DELIMa</p>
 
-        <input type="text" id="searchInput" placeholder="Contoh: Ahmad" oninput="searchStudent()">
+        <input type="text" id="searchInput" placeholder="Contoh: Ali" oninput="searchStudent()">
 
         <div id="result" class="result-box">
             <p><strong>Nama:</strong> <span id="studentName"></span></p>
             <p><strong>E-mel:</strong> <span id="studentEmail"></span></p>
+            <p><strong>Tahun:</strong> <span id="studentYear"></span></p>
             <br>
+            
+            <input type="password" id="studentPassword" placeholder="Masukkan kata laluan">
+            <p id="errorMsg" class="error-msg">Kata laluan tidak sah.</p>
+            
             <button onclick="loginToAins()">Log Masuk ke AINS</button>
         </div>
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpIPMiT4FKydT77iNycvTAEC4mz8wiES4Cgjer1F1EnPxVl2XN_klt4nxk_R7OCuRzow/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsRIFl8EOmO_RfQbifRYv0A7P6e5tOabWf4Qzhp50g9YBkQYCqU9F_zkX873yD9BVDJA/exec";
         
         let students = [];
-        let selectedEmail = "";
+        let selectedStudent = null;
 
-        // Muat data dari Google Sheets
         async function fetchStudentsData() {
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
@@ -101,20 +112,21 @@
             }
         }
 
-        // Jalankan fungsi semasa laman web dibuka
         fetchStudentsData();
 
         function searchStudent() {
             const input = document.getElementById('searchInput').value.trim().toLowerCase();
             const resultBox = document.getElementById('result');
+            document.getElementById('errorMsg').style.display = 'none'; // Sembunyikan mesej ralat
             
             if (input.length > 2) {
                 const found = students.find(s => s.name && s.name.toLowerCase().includes(input));
 
                 if (found) {
-                    selectedEmail = found.email;
+                    selectedStudent = found;
                     document.getElementById('studentName').innerText = found.name;
                     document.getElementById('studentEmail').innerText = found.email;
+                    document.getElementById('studentYear').innerText = found.year;
                     resultBox.style.display = 'block';
                 } else {
                     resultBox.style.display = 'none';
@@ -125,11 +137,18 @@
         }
 
         function loginToAins() {
-            if (selectedEmail) {
-                const ainsUrl = "https://ains.moe.gov.my";
-                const autoLoginUrl = `https://accounts.google.com/AccountChooser?Email=${selectedEmail}&continue=${encodeURIComponent(ainsUrl)}`;
+            if (selectedStudent) {
+                const enteredPassword = document.getElementById('studentPassword').value.trim();
                 
-                window.open(autoLoginUrl, '_blank');
+                // Semak kesahihan kata laluan
+                if (enteredPassword === selectedStudent.password.toString()) {
+                    const ainsUrl = "https://ains.moe.gov.my";
+                    const autoLoginUrl = `https://accounts.google.com/AccountChooser?Email=${selectedStudent.email}&continue=${encodeURIComponent(ainsUrl)}`;
+                    
+                    window.open(autoLoginUrl, '_blank');
+                } else {
+                    document.getElementById('errorMsg').style.display = 'block';
+                }
             }
         }
     </script>
