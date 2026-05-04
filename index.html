@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DELIMa SK KRANGAN</title>
+    <title>DELIMa SK Krangan</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,6 +13,11 @@
             background-color: #f4f7f6;
             padding: 40px 20px;
             text-align: center;
+            /* Memastikan footer berada di bawah */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         .container {
             max-width: 500px;
@@ -21,6 +26,12 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        /* Tetapan Logo */
+        .logo {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 15px;
         }
         h2 {
             color: #333;
@@ -106,15 +117,23 @@
         .dropdown-item:hover {
             background-color: #f1f1f1;
         }
+        /* Footer Style */
+        .footer {
+            margin-top: 20px;
+            color: #666;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>Sistem Log Masuk AINS</h2>
-        <p class="subtitle">Mula menaip nama dan masukkan kata laluan</p>
+        <img src="logo.png" alt="Logo Sekolah" class="logo">
+        
+        <h2>DELIMa SK Krangan</h2>
+        <p class="subtitle">Sila taip nama dan masukkan kata laluan</p>
 
-        <input type="text" id="searchInput" placeholder="Mula menaip nama anda..." oninput="filterStudents()">
+        <input type="text" id="searchInput" placeholder="Sila taip nama anda..." oninput="filterStudents()">
         
         <div id="dropdownBox" class="dropdown-box"></div>
 
@@ -137,7 +156,12 @@
         </div>
     </div>
 
+    <div class="footer">
+        Hak Cipta Terpelihara &copy; 2026 | Disediakan oleh <b>UNIT ICT SK KRANGAN</b>
+    </div>
+
     <script>
+        // URL Google Apps Script anda
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsRIFl8EOmO_RfQbifRYv0A7P6e5tOabWf4Qzhp50g9YBkQYCqU9F_zkX873yD9BVDJA/exec";
         
         let students = [];
@@ -153,6 +177,7 @@
             }
         }
 
+        // Muat data semasa mula-mula buka
         fetchStudentsData();
 
         function filterStudents() {
@@ -202,7 +227,6 @@
             if (selectedStudent) {
                 const enteredPassword = document.getElementById('studentPassword').value.trim();
                 
-                // Semak kata laluan terlebih dahulu
                 if (enteredPassword === selectedStudent.password.toString()) {
                     navigator.clipboard.writeText(selectedStudent.email).then(() => {
                         document.getElementById('copiedEmailMsg').style.display = 'block';
@@ -218,9 +242,8 @@
             if (selectedStudent) {
                 const enteredPassword = document.getElementById('studentPassword').value.trim();
                 
-                // Semak kata laluan terlebih dahulu
                 if (enteredPassword === selectedStudent.password.toString()) {
-                    navigator.clipboard.writeText(selectedStudent.password).toString().then(() => {
+                    navigator.clipboard.writeText(selectedStudent.password).then(() => {
                         document.getElementById('copiedPasswordMsg').style.display = 'block';
                         document.getElementById('copiedEmailMsg').style.display = 'none';
                     });
@@ -230,10 +253,4 @@
             }
         }
 
-        function goToAins() {
-            const ainsUrl = "https://ains.moe.gov.my";
-            window.open(ainsUrl, '_blank');
-        }
-    </script>
-</body>
-</html>
+        function goToAins()
