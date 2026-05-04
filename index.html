@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DELIMa SK KRANGAN</title>
+    <title>Log Masuk Pantas AINS - DELIMa</title>
     <style>
         * {
             box-sizing: border-box;
@@ -127,10 +127,13 @@
             <input type="password" id="studentPassword" placeholder="Masukkan kata laluan">
             <p id="errorMsg" class="error-msg">Kata laluan tidak sah.</p>
             
-            <button class="btn-copy" onclick="copyEmail()">1. Salin E-mel & Kata Laluan</button>
-            <p id="copiedMsg" class="copied-msg">E-mel berjaya disalin ke papan keratan!</p>
+            <button class="btn-copy" onclick="copyEmail()">1. Salin E-mel Sahaja</button>
+            <p id="copiedEmailMsg" class="copied-msg">E-mel berjaya disalin ke papan keratan!</p>
             
-            <button onclick="goToAins()">2. Pergi ke Laman AINS</button>
+            <button class="btn-copy" onclick="copyPassword()">2. Salin Kata Laluan Sahaja</button>
+            <p id="copiedPasswordMsg" class="copied-msg">Kata laluan berjaya disalin ke papan keratan!</p>
+            
+            <button onclick="goToAins()">3. Pergi ke Laman AINS</button>
         </div>
     </div>
 
@@ -158,7 +161,8 @@
             
             document.getElementById('result').style.display = 'none';
             document.getElementById('errorMsg').style.display = 'none';
-            document.getElementById('copiedMsg').style.display = 'none';
+            document.getElementById('copiedEmailMsg').style.display = 'none';
+            document.getElementById('copiedPasswordMsg').style.display = 'none';
 
             if (input.length > 2) {
                 const filtered = students.filter(s => s.name && s.name.toLowerCase().includes(input));
@@ -198,12 +202,27 @@
             if (selectedStudent) {
                 const enteredPassword = document.getElementById('studentPassword').value.trim();
                 
+                // Semak kata laluan terlebih dahulu
                 if (enteredPassword === selectedStudent.password.toString()) {
-                    // Gabungkan e-mel dan password sebagai rujukan mudah untuk murid
-                    const fullData = `E-mel: ${selectedStudent.email}\nKata Laluan: ${selectedStudent.password}`;
-                    
-                    navigator.clipboard.writeText(fullData).then(() => {
-                        document.getElementById('copiedMsg').style.display = 'block';
+                    navigator.clipboard.writeText(selectedStudent.email).then(() => {
+                        document.getElementById('copiedEmailMsg').style.display = 'block';
+                        document.getElementById('copiedPasswordMsg').style.display = 'none';
+                    });
+                } else {
+                    document.getElementById('errorMsg').style.display = 'block';
+                }
+            }
+        }
+
+        function copyPassword() {
+            if (selectedStudent) {
+                const enteredPassword = document.getElementById('studentPassword').value.trim();
+                
+                // Semak kata laluan terlebih dahulu
+                if (enteredPassword === selectedStudent.password.toString()) {
+                    navigator.clipboard.writeText(selectedStudent.password).toString().then(() => {
+                        document.getElementById('copiedPasswordMsg').style.display = 'block';
+                        document.getElementById('copiedEmailMsg').style.display = 'none';
                     });
                 } else {
                     document.getElementById('errorMsg').style.display = 'block';
