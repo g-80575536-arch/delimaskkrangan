@@ -31,7 +31,7 @@
             margin-bottom: 25px;
             font-size: 14px;
         }
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], select {
             width: 100%;
             padding: 12px;
             font-size: 16px;
@@ -62,9 +62,16 @@
             font-size: 16px;
             cursor: pointer;
             transition: background 0.3s;
+            margin-bottom: 10px;
         }
         button:hover {
             background-color: #0056b3;
+        }
+        .btn-copy {
+            background-color: #28a745;
+        }
+        .btn-copy:hover {
+            background-color: #218838;
         }
         .error-msg {
             color: #dc3545;
@@ -72,6 +79,32 @@
             margin-top: -10px;
             margin-bottom: 15px;
             display: none;
+        }
+        .copied-msg {
+            color: #28a745;
+            font-size: 13px;
+            margin-top: -5px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .dropdown-box {
+            display: none;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #fff;
+            max-height: 150px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .dropdown-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .dropdown-item:hover {
+            background-color: #f1f1f1;
         }
     </style>
 </head>
@@ -81,7 +114,9 @@
         <h2>Sistem Log Masuk AINS</h2>
         <p class="subtitle">Taip nama anda untuk carian e-mel DELIMa</p>
 
-        <input type="text" id="searchInput" placeholder="Contoh: Ali" oninput="searchStudent()">
+        <input type="text" id="searchInput" placeholder="Mula menaip nama anda..." oninput="filterStudents()">
+        
+        <div id="dropdownBox" class="dropdown-box"></div>
 
         <div id="result" class="result-box">
             <p><strong>Nama:</strong> <span id="studentName"></span></p>
@@ -92,7 +127,10 @@
             <input type="password" id="studentPassword" placeholder="Masukkan kata laluan">
             <p id="errorMsg" class="error-msg">Kata laluan tidak sah.</p>
             
-            <button onclick="loginToAins()">Log Masuk ke AINS</button>
+            <button class="btn-copy" onclick="copyEmail()">1. Salin E-mel</button>
+            <p id="copiedMsg" class="copied-msg">E-mel berjaya disalin! Sekarang klik butang di bawah.</p>
+            
+            <button onclick="goToAins()">2. Pergi ke Laman AINS</button>
         </div>
     </div>
 
@@ -114,42 +152,70 @@
 
         fetchStudentsData();
 
-        function searchStudent() {
+        function filterStudents() {
             const input = document.getElementById('searchInput').value.trim().toLowerCase();
-            const resultBox = document.getElementById('result');
-            document.getElementById('errorMsg').style.display = 'none'; // Sembunyikan mesej ralat
+            const dropdownBox = document.getElementById('dropdownBox');
             
-            if (input.length > 2) {
-                const found = students.find(s => s.name && s.name.toLowerCase().includes(input));
+            // Sembunyikan hasil carian dan mesej ralat jika menaip semula
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('copiedMsg').style.display = 'none';
 
-                if (found) {
-                    selectedStudent = found;
-                    document.getElementById('studentName').innerText = found.name;
-                    document.getElementById('studentEmail').innerText = found.email;
-                    document.getElementById('studentYear').innerText = found.year;
-                    resultBox.style.display = 'block';
+            if (input.length > 2) {
+                const filtered = students.filter(s => s.name && s.name.toLowerCase().includes(input));
+
+                if (filtered.length > 0) {
+                    let html = '';
+                    filtered.forEach(s => {
+                        html += `<div class="dropdown-item" onclick="selectStudent('${s.name}')">${s.name}</div>`;
+                    });
+                    dropdownBox.innerHTML = html;
+                    dropdownBox.style.display = 'block';
                 } else {
-                    resultBox.style.display = 'none';
+                    dropdownBox.style.display = 'none';
                 }
             } else {
-                resultBox.style.display = 'none';
+                dropdownBox.style.display = 'none';
             }
         }
 
-        function loginToAins() {
+        function selectStudent(name) {
+            const found = students.find(s => s.name === name);
+            if (found) {
+                selectedStudent = found;
+                
+                // Isi ruangan carian dengan nama yang dipilih dan sembunyikan dropdown
+                document.getElementById('searchInput').value = found.name;
+                document.getElementById('dropdownBox').style.display = 'none';
+                
+                // Paparkan butiran murid
+                document.getElementById('studentName').innerText = found.name;
+                document.getElementById('studentEmail').innerText = found.email;
+                document.getElementById('studentYear').innerText = found.year;
+                
+                document.getElementById('result').style.display = 'block';
+            }
+        }
+
+        function copyEmail() {
             if (selectedStudent) {
                 const enteredPassword = document.getElementById('studentPassword').value.trim();
                 
-                // Semak kesahihan kata laluan
                 if (enteredPassword === selectedStudent.password.toString()) {
-                    const ainsUrl = "https://ains.moe.gov.my";
-                    const autoLoginUrl = `https://accounts.google.com/AccountChooser?Email=${selectedStudent.email}&continue=${encodeURIComponent(ainsUrl)}`;
+                    const email = selectedStudent.email;
                     
-                    window.open(autoLoginUrl, '_blank');
+                    navigator.clipboard.writeText(email).then(() => {
+                        document.getElementById('copiedMsg').style.display = 'block';
+                    });
                 } else {
                     document.getElementById('errorMsg').style.display = 'block';
                 }
             }
+        }
+
+        function goToAins() {
+            const ainsUrl = "https://ains.moe.gov.my";
+            window.open(ainsUrl, '_blank');
         }
     </script>
 </body>
