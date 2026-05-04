@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Masuk Pantas AINS - DELIMa</title>
+    <title>DELIMa SK KRANGAN</title>
     <style>
         * {
             box-sizing: border-box;
@@ -31,7 +31,7 @@
             margin-bottom: 25px;
             font-size: 14px;
         }
-        input[type="text"], input[type="password"], select {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
             font-size: 16px;
@@ -112,7 +112,7 @@
 
     <div class="container">
         <h2>Sistem Log Masuk AINS</h2>
-        <p class="subtitle">Taip nama anda untuk carian e-mel DELIMa</p>
+        <p class="subtitle">Mula menaip nama dan masukkan kata laluan</p>
 
         <input type="text" id="searchInput" placeholder="Mula menaip nama anda..." oninput="filterStudents()">
         
@@ -127,8 +127,8 @@
             <input type="password" id="studentPassword" placeholder="Masukkan kata laluan">
             <p id="errorMsg" class="error-msg">Kata laluan tidak sah.</p>
             
-            <button class="btn-copy" onclick="copyEmail()">1. Salin E-mel</button>
-            <p id="copiedMsg" class="copied-msg">E-mel berjaya disalin! Sekarang klik butang di bawah.</p>
+            <button class="btn-copy" onclick="copyEmail()">1. Salin E-mel & Kata Laluan</button>
+            <p id="copiedMsg" class="copied-msg">E-mel berjaya disalin ke papan keratan!</p>
             
             <button onclick="goToAins()">2. Pergi ke Laman AINS</button>
         </div>
@@ -156,7 +156,6 @@
             const input = document.getElementById('searchInput').value.trim().toLowerCase();
             const dropdownBox = document.getElementById('dropdownBox');
             
-            // Sembunyikan hasil carian dan mesej ralat jika menaip semula
             document.getElementById('result').style.display = 'none';
             document.getElementById('errorMsg').style.display = 'none';
             document.getElementById('copiedMsg').style.display = 'none';
@@ -184,11 +183,9 @@
             if (found) {
                 selectedStudent = found;
                 
-                // Isi ruangan carian dengan nama yang dipilih dan sembunyikan dropdown
                 document.getElementById('searchInput').value = found.name;
                 document.getElementById('dropdownBox').style.display = 'none';
                 
-                // Paparkan butiran murid
                 document.getElementById('studentName').innerText = found.name;
                 document.getElementById('studentEmail').innerText = found.email;
                 document.getElementById('studentYear').innerText = found.year;
@@ -202,9 +199,10 @@
                 const enteredPassword = document.getElementById('studentPassword').value.trim();
                 
                 if (enteredPassword === selectedStudent.password.toString()) {
-                    const email = selectedStudent.email;
+                    // Gabungkan e-mel dan password sebagai rujukan mudah untuk murid
+                    const fullData = `E-mel: ${selectedStudent.email}\nKata Laluan: ${selectedStudent.password}`;
                     
-                    navigator.clipboard.writeText(email).then(() => {
+                    navigator.clipboard.writeText(fullData).then(() => {
                         document.getElementById('copiedMsg').style.display = 'block';
                     });
                 } else {
