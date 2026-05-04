@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Masuk Pantas AINS - DELIMa</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f4f7f6;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .result-box {
+            display: none;
+            background: #e9f5e9;
+            border-left: 5px solid #28a745;
+            padding: 15px;
+            text-align: left;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .result-box p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Sistem Log Masuk AINS</h2>
+        <p class="subtitle">Taip nama anda untuk carian e-mel DELIMa</p>
+
+        <input type="text" id="searchInput" placeholder="Contoh: Ahmad" oninput="searchStudent()">
+
+        <div id="result" class="result-box">
+            <p><strong>Nama:</strong> <span id="studentName"></span></p>
+            <p><strong>E-mel:</strong> <span id="studentEmail"></span></p>
+            <br>
+            <button onclick="loginToAins()">Log Masuk ke AINS</button>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpIPMiT4FKydT77iNycvTAEC4mz8wiES4Cgjer1F1EnPxVl2XN_klt4nxk_R7OCuRzow/exec";
+        
+        let students = [];
+        let selectedEmail = "";
+
+        // Muat data dari Google Sheets
+        async function fetchStudentsData() {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                students = await response.json();
+                console.log("Data murid berjaya dimuatkan.");
+            } catch (error) {
+                console.error("Ralat memuatkan data:", error);
+            }
+        }
+
+        // Jalankan fungsi semasa laman web dibuka
+        fetchStudentsData();
+
+        function searchStudent() {
+            const input = document.getElementById('searchInput').value.trim().toLowerCase();
+            const resultBox = document.getElementById('result');
+            
+            if (input.length > 2) {
+                const found = students.find(s => s.name && s.name.toLowerCase().includes(input));
+
+                if (found) {
+                    selectedEmail = found.email;
+                    document.getElementById('studentName').innerText = found.name;
+                    document.getElementById('studentEmail').innerText = found.email;
+                    resultBox.style.display = 'block';
+                } else {
+                    resultBox.style.display = 'none';
+                }
+            } else {
+                resultBox.style.display = 'none';
+            }
+        }
+
+        function loginToAins() {
+            if (selectedEmail) {
+                const ainsUrl = "https://ains.moe.gov.my";
+                const autoLoginUrl = `https://accounts.google.com/AccountChooser?Email=${selectedEmail}&continue=${encodeURIComponent(ainsUrl)}`;
+                
+                window.open(autoLoginUrl, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
