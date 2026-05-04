@@ -11,44 +11,66 @@
         }
         body {
             background-color: #f4f7f6;
-            padding: 40px 20px;
+            padding: 20px 10px;
             text-align: center;
-            /* Memastikan footer berada di bawah */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            align-items: center;
+            margin: 0;
         }
         .container {
-            max-width: 500px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 550px;
             background: #fff;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        /* Tetapan Logo */
         .logo {
-            max-width: 120px;
+            max-width: 100px;
             height: auto;
             margin-bottom: 15px;
         }
         h2 {
             color: #333;
             margin-bottom: 10px;
+            font-size: 24px;
         }
         p.subtitle {
             color: #666;
             margin-bottom: 25px;
-            font-size: 14px;
+            font-size: 15px;
+        }
+        .search-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            margin-bottom: 20px;
+        }
+        .search-group input[type="text"] {
+            margin-bottom: 0;
+        }
+        .search-btn {
+            padding: 14px 20px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+        .search-btn:hover {
+            background-color: #e68900;
         }
         .result-box {
             display: none;
@@ -65,7 +87,7 @@
         }
         button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: #007bff;
             color: white;
             border: none;
@@ -102,6 +124,7 @@
             display: none;
             width: 100%;
             padding: 10px;
+            margin-top: -10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -117,7 +140,6 @@
         .dropdown-item:hover {
             background-color: #f1f1f1;
         }
-        /* Footer Style */
         .footer {
             margin-top: 20px;
             color: #666;
@@ -131,9 +153,12 @@
         <img src="logo.png" alt="Logo Sekolah" class="logo">
         
         <h2>DELIMa SK Krangan</h2>
-        <p class="subtitle">Sila taip nama dan masukkan kata laluan</p>
+        <p class="subtitle">Sila taip nama dan tekan butang cari</p>
 
-        <input type="text" id="searchInput" placeholder="Sila taip nama anda..." oninput="filterStudents()">
+        <div class="search-group">
+            <input type="text" id="searchInput" placeholder="Sila taip nama anda..." oninput="filterStudents()">
+            <button class="search-btn" onclick="triggerSearch()">Cari</button>
+        </div>
         
         <div id="dropdownBox" class="dropdown-box"></div>
 
@@ -161,7 +186,6 @@
     </div>
 
     <script>
-        // URL Google Apps Script anda
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzsRIFl8EOmO_RfQbifRYv0A7P6e5tOabWf4Qzhp50g9YBkQYCqU9F_zkX873yD9BVDJA/exec";
         
         let students = [];
@@ -177,7 +201,6 @@
             }
         }
 
-        // Muat data semasa mula-mula buka
         fetchStudentsData();
 
         function filterStudents() {
@@ -204,6 +227,19 @@
                 }
             } else {
                 dropdownBox.style.display = 'none';
+            }
+        }
+
+        // Fungsi apabila butang Cari ditekan
+        function triggerSearch() {
+            const input = document.getElementById('searchInput').value.trim();
+            const found = students.find(s => s.name && s.name.toLowerCase() === input.toLowerCase());
+            
+            if (found) {
+                selectStudent(found.name);
+            } else {
+                // Jika tiada dalam senarai atau tidak dipilih dari dropdown
+                alert("Murid tidak dijumpai. Sila pastikan ejaan betul atau pilih dari senarai cadangan.");
             }
         }
 
@@ -253,4 +289,10 @@
             }
         }
 
-        function goToAins()
+        function goToAins() {
+            const ainsUrl = "https://ains.moe.gov.my";
+            window.open(ainsUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
